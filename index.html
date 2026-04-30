@@ -3,424 +3,534 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HR Time Savings Calculator — BrioHR Malaysia</title>
+<title>HR Savings Calculator — BrioHR</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f5f4f0;
+    background: #f4f3ef;
     min-height: 100vh;
     display: flex;
-    align-items: flex-start;
     justify-content: center;
     padding: 2.5rem 1.5rem;
     color: #1a1a1a;
   }
-  .wrap { max-width: 880px; width: 100%; }
+  .wrap { max-width: 860px; width: 100%; }
+  h1 { font-size: 22px; font-weight: 700; color: #0f0f0f; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #999; margin-bottom: 1.75rem; }
+  .sec { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #c0c0bb; margin-bottom: 10px; }
+  .card { background: #fff; border-radius: 16px; border: 1px solid #e8e8e4; padding: 1.5rem; margin-bottom: 1rem; }
 
-  /* Header */
-  .header { margin-bottom: 2rem; }
-  .header h1 { font-size: 24px; font-weight: 700; color: #0f0f0f; line-height: 1.25; }
-  .header p { font-size: 13px; color: #888; margin-top: 6px; }
+  /* Module checkboxes */
+  .module-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .mod-item { position: relative; }
+  .mod-item input[type=checkbox] { position: absolute; opacity: 0; width: 0; height: 0; }
+  .mod-label {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; border-radius: 10px;
+    border: 1.5px solid #e8e8e4; background: #fafaf7;
+    cursor: pointer; transition: all .15s;
+    font-size: 12px; font-weight: 500; color: #555;
+    user-select: none;
+  }
+  .mod-label .mod-icon { font-size: 15px; }
+  .mod-item input:checked + .mod-label {
+    background: #E1F5EE; border-color: #1D9E75; color: #0F6E56;
+  }
+  .mod-check {
+    width: 14px; height: 14px; border-radius: 4px;
+    border: 1.5px solid #ccc; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-left: auto; transition: all .15s;
+  }
+  .mod-item input:checked + .mod-label .mod-check {
+    background: #1D9E75; border-color: #1D9E75;
+  }
+  .mod-item input:checked + .mod-label .mod-check::after {
+    content: ''; display: block; width: 7px; height: 4px;
+    border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
+    transform: rotate(-45deg) translate(0px, -1px);
+  }
 
   /* Sliders */
-  .sliders-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 1.75rem;
-    margin-bottom: 1.25rem;
-    border: 1px solid #ebebeb;
-  }
-  .sliders-title { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #bbb; margin-bottom: 1.25rem; }
-  .slider-row { display: grid; grid-template-columns: 130px 1fr 150px; align-items: center; gap: 16px; margin-bottom: 14px; }
+  .slider-row { display: grid; grid-template-columns: 130px 1fr 145px; align-items: center; gap: 14px; margin-bottom: 12px; }
   .slider-row:last-child { margin-bottom: 0; }
-  .slider-row label { font-size: 13px; color: #555; }
-  input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 4px; background: #e4e4e4; outline: none; cursor: pointer; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%; background: #1D9E75; cursor: pointer; border: 2.5px solid #fff; box-shadow: 0 1px 5px rgba(0,0,0,0.18); }
-  input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #1D9E75; cursor: pointer; border: 2.5px solid #fff; }
-  .slider-val { font-size: 14px; font-weight: 600; color: #0f0f0f; text-align: right; }
+  .slider-row label { font-size: 12px; color: #666; }
+  input[type=range] { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 4px; background: #e2e2de; outline: none; cursor: pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 19px; height: 19px; border-radius: 50%; background: #1D9E75; cursor: pointer; border: 2.5px solid #fff; box-shadow: 0 1px 6px rgba(0,0,0,0.15); }
+  input[type=range]::-moz-range-thumb { width: 19px; height: 19px; border-radius: 50%; background: #1D9E75; cursor: pointer; border: 2.5px solid #fff; }
+  .slider-val { font-size: 13px; font-weight: 600; color: #111; text-align: right; }
 
   /* Metrics */
-  .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
-  .metric { background: #fff; border-radius: 14px; padding: 1.1rem 1rem; border: 1px solid #ebebeb; }
-  .metric.highlight { background: #E1F5EE; border-color: #9FE1CB; }
-  .metric-label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #aaa; margin-bottom: 8px; }
-  .metric.highlight .metric-label { color: #1D9E75; }
-  .metric-value { font-size: 26px; font-weight: 700; color: #0f0f0f; line-height: 1; }
-  .metric.highlight .metric-value { color: #0F6E56; }
-  .metric-sub { font-size: 11px; color: #bbb; margin-top: 5px; }
-  .metric.highlight .metric-sub { color: #1D9E75; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 1rem; }
+  .met { background: #fff; border-radius: 14px; border: 1px solid #e8e8e4; padding: 1rem; }
+  .met.green { background: #E1F5EE; border-color: #9FE1CB; }
+  .met-label { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #b0b0aa; margin-bottom: 6px; }
+  .met.green .met-label { color: #1D9E75; }
+  .met-val { font-size: 28px; font-weight: 700; color: #0f0f0f; line-height: 1; }
+  .met.green .met-val { color: #0F6E56; }
+  .met-sub { font-size: 11px; color: #bbb; margin-top: 4px; }
+  .met.green .met-sub { color: #1D9E75; }
 
-  /* Category cards */
-  .categories { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.25rem; }
-  .cat-card { background: #fff; border-radius: 14px; border: 1px solid #ebebeb; overflow: hidden; }
-  .cat-header {
-    display: grid;
-    grid-template-columns: 28px 1fr 100px 100px 110px;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 18px;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.15s;
-  }
-  .cat-header:hover { background: #fafaf8; }
-  .cat-icon { font-size: 16px; }
-  .cat-name { font-size: 14px; font-weight: 600; color: #0f0f0f; }
-  .cat-name span { font-size: 11px; font-weight: 400; color: #999; margin-left: 6px; }
-  .cat-manual { font-size: 13px; color: #aaa; text-align: right; }
-  .cat-digital { font-size: 13px; color: #1D9E75; text-align: right; font-weight: 500; }
-  .cat-saved { font-size: 14px; font-weight: 700; color: #0f0f0f; text-align: right; }
-  .cat-bar-wrap { width: 100%; height: 3px; background: #f0f0ee; margin-top: 4px; border-radius: 2px; }
-  .cat-bar-fill { height: 3px; border-radius: 2px; background: #1D9E75; transition: width 0.4s ease; }
-  .cat-chevron { font-size: 12px; color: #ccc; transition: transform 0.2s; }
-  .cat-card.open .cat-chevron { transform: rotate(180deg); }
-
-  /* Tasks inside a category */
-  .cat-body { display: none; border-top: 1px solid #f2f2f0; }
+  /* Category table */
+  .col-head { display: grid; grid-template-columns: 26px 1fr 95px 95px 110px; gap: 8px; padding: 0 16px 6px; font-size: 10px; font-weight: 700; color: #ccc; text-transform: uppercase; letter-spacing: 0.05em; }
+  .cat-card { background: #fff; border-radius: 13px; border: 1px solid #e8e8e4; overflow: hidden; margin-bottom: 8px; transition: opacity .2s; }
+  .cat-card.disabled { opacity: 0.35; pointer-events: none; }
+  .cat-head { display: grid; grid-template-columns: 26px 1fr 95px 95px 110px; align-items: center; gap: 8px; padding: 13px 16px; cursor: pointer; transition: background .15s; }
+  .cat-head:hover { background: #fafaf7; }
+  .cat-icon { font-size: 15px; }
+  .cat-label { font-size: 13px; font-weight: 600; color: #111; }
+  .cat-sub { font-size: 11px; color: #bbb; font-weight: 400; }
+  .bar-wrap { height: 3px; background: #f0f0ec; border-radius: 2px; margin-top: 4px; }
+  .bar-fill { height: 3px; border-radius: 2px; background: #1D9E75; transition: width .4s ease; }
+  .col-m { font-size: 12px; color: #bbb; text-align: right; }
+  .col-d { font-size: 12px; color: #1D9E75; font-weight: 500; text-align: right; }
+  .col-s { font-size: 13px; font-weight: 700; color: #111; text-align: right; }
+  .cat-body { display: none; border-top: 1px solid #f2f2ee; }
   .cat-card.open .cat-body { display: block; }
-  .task-header { display: grid; grid-template-columns: 1fr 100px 100px 110px; gap: 10px; padding: 8px 18px 6px 56px; font-size: 10px; font-weight: 600; color: #ccc; text-transform: uppercase; letter-spacing: 0.05em; background: #fafaf8; }
-  .task-row { display: grid; grid-template-columns: 1fr 100px 100px 110px; gap: 10px; padding: 10px 18px 10px 56px; font-size: 12px; border-top: 1px solid #f5f5f3; align-items: center; }
-  .task-row:hover { background: #fafafa; }
-  .task-name-cell { color: #444; }
-  .task-basis { font-size: 10px; color: #bbb; margin-top: 2px; }
-  .task-m { color: #aaa; text-align: right; }
-  .task-d { color: #1D9E75; text-align: right; font-weight: 500; }
-  .task-s { font-weight: 600; color: #0f0f0f; text-align: right; }
+  .task-col-head { display: grid; grid-template-columns: 1fr 95px 95px 110px; gap: 8px; padding: 7px 16px 5px 44px; font-size: 9px; font-weight: 700; color: #ccc; text-transform: uppercase; letter-spacing: 0.05em; background: #fafaf7; }
+  .task-row { display: grid; grid-template-columns: 1fr 95px 95px 110px; gap: 8px; padding: 9px 16px 9px 44px; border-top: 1px solid #f5f5f1; align-items: start; }
+  .task-row:hover { background: #fafaf7; }
+  .t-name { font-size: 12px; color: #333; }
+  .t-basis { font-size: 10px; color: #bbb; margin-top: 2px; line-height: 1.4; }
+  .t-m { font-size: 11px; color: #bbb; text-align: right; padding-top: 1px; }
+  .t-d { font-size: 11px; color: #1D9E75; font-weight: 500; text-align: right; padding-top: 1px; }
+  .t-s { font-size: 12px; font-weight: 600; color: #111; text-align: right; padding-top: 1px; }
 
-  /* Methodology note */
-  .method-card { background: #fff; border-radius: 14px; border: 1px solid #ebebeb; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
-  .method-title { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #bbb; margin-bottom: 10px; }
-  .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .method-item { font-size: 11px; color: #777; line-height: 1.6; }
-  .method-item strong { color: #444; }
+  /* Penalties */
+  .pen-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 10px; }
+  .pen-card { background: #FEF5F5; border: 1px solid #f5c6c6; border-radius: 12px; padding: 1rem; }
+  .pen-who { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #c0786f; margin-bottom: 4px; }
+  .pen-name { font-size: 13px; font-weight: 700; color: #B02A1D; margin-bottom: 6px; }
+  .pen-line { font-size: 11px; color: #7a1c1c; line-height: 1.6; }
+  .pen-line strong { font-weight: 600; }
+  .pen-exposure { background: #FDECEA; border-radius: 12px; padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .pen-exp-text { font-size: 12px; color: #7a1c1c; line-height: 1.6; max-width: 480px; }
+  .pen-exp-text strong { color: #B02A1D; }
+  .pen-exp-num .big { font-size: 26px; font-weight: 700; color: #B02A1D; white-space: nowrap; }
+  .pen-exp-num .small { font-size: 10px; color: #c0786f; text-align: right; }
+
+  /* Methodology */
+  .method-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1rem; }
+  .mstep { display: flex; gap: 12px; align-items: flex-start; }
+  .mnum { width: 22px; height: 22px; border-radius: 50%; background: #E1F5EE; color: #0F6E56; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .mtext { font-size: 12px; color: #555; line-height: 1.65; }
+  .mtext strong { color: #222; }
+  .formula { display: inline-block; background: #f5f5f1; border-radius: 5px; padding: 3px 8px; font-family: monospace; font-size: 11px; color: #333; margin-top: 3px; }
+  .method-divider { border: none; border-top: 1px solid #f0f0ec; margin: 12px 0; }
+  .basis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; }
+  .bi { font-size: 11px; color: #777; line-height: 1.6; }
+  .bi strong { color: #333; }
+  .nonlinear-note { font-size: 11px; color: #999; margin-top: 10px; line-height: 1.6; }
+  .nonlinear-note strong { color: #555; }
 
   /* Footer */
-  .footer { display: flex; align-items: center; justify-content: space-between; padding-top: 1rem; }
-  .footer-brand { font-size: 15px; font-weight: 700; color: #1D9E75; }
-  .footer-note { font-size: 11px; color: #ccc; }
+  .footer { display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; }
+  .footer-brand { font-size: 14px; font-weight: 700; color: #1D9E75; }
+  .footer-note { font-size: 10px; color: #ccc; }
 
-  /* Column headers for category list */
-  .cat-col-headers { display: grid; grid-template-columns: 28px 1fr 100px 100px 110px; gap: 10px; padding: 0 18px 8px; font-size: 10px; font-weight: 600; color: #ccc; text-transform: uppercase; letter-spacing: 0.05em; }
-
-  @media (max-width: 640px) {
-    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
-    .slider-row { grid-template-columns: 100px 1fr 120px; }
-    .cat-header { grid-template-columns: 22px 1fr 90px; }
-    .cat-manual, .cat-digital { display: none; }
-    .cat-col-headers { grid-template-columns: 22px 1fr 90px; }
-    .task-header { grid-template-columns: 1fr 90px; padding-left: 42px; }
-    .task-row { grid-template-columns: 1fr 90px; padding-left: 42px; }
-    .task-m, .task-d { display: none; }
-    .method-grid { grid-template-columns: 1fr; }
+  @media (max-width: 620px) {
+    .module-grid { grid-template-columns: repeat(2, 1fr); }
+    .metrics-grid { grid-template-columns: repeat(2,1fr); }
+    .slider-row { grid-template-columns: 100px 1fr 115px; }
+    .col-head { display: none; }
+    .cat-head { grid-template-columns: 26px 1fr 100px; }
+    .col-m, .col-d { display: none; }
+    .task-col-head { grid-template-columns: 1fr 90px; }
+    .task-row { grid-template-columns: 1fr 90px; }
+    .t-m, .t-d { display: none; }
+    .pen-grid { grid-template-columns: 1fr; }
+    .basis-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <div class="header">
-    <h1>How much time is your HR team losing every year?</h1>
-    <p>Adjust for your company size to see estimated hours and cost savings from digitizing HR — built for Malaysia.</p>
+  <h1>How much time is your HR team losing?</h1>
+  <p class="subtitle">Select the modules you use, adjust for your company size.</p>
+
+  <!-- Module selector -->
+  <div class="sec">Modules in use</div>
+  <div class="card" style="margin-bottom:1rem">
+    <div class="module-grid">
+      <div class="mod-item">
+        <input type="checkbox" id="mod-payroll" checked onchange="update()">
+        <label class="mod-label" for="mod-payroll">
+          <span class="mod-icon">📋</span> Payroll
+          <span class="mod-check"></span>
+        </label>
+      </div>
+      <div class="mod-item">
+        <input type="checkbox" id="mod-leave" checked onchange="update()">
+        <label class="mod-label" for="mod-leave">
+          <span class="mod-icon">🏖</span> Leave
+          <span class="mod-check"></span>
+        </label>
+      </div>
+      <div class="mod-item">
+        <input type="checkbox" id="mod-claims" checked onchange="update()">
+        <label class="mod-label" for="mod-claims">
+          <span class="mod-icon">🧾</span> Claims
+          <span class="mod-check"></span>
+        </label>
+      </div>
+      <div class="mod-item">
+        <input type="checkbox" id="mod-attendance" checked onchange="update()">
+        <label class="mod-label" for="mod-attendance">
+          <span class="mod-icon">🕐</span> Attendance
+          <span class="mod-check"></span>
+        </label>
+      </div>
+      <div class="mod-item">
+        <input type="checkbox" id="mod-performance" onchange="update()">
+        <label class="mod-label" for="mod-performance">
+          <span class="mod-icon">🎯</span> Performance
+          <span class="mod-check"></span>
+        </label>
+      </div>
+      <div class="mod-item">
+        <input type="checkbox" id="mod-recruitment" onchange="update()">
+        <label class="mod-label" for="mod-recruitment">
+          <span class="mod-icon">🔍</span> Recruitment
+          <span class="mod-check"></span>
+        </label>
+      </div>
+      <div class="mod-item">
+        <input type="checkbox" id="mod-onboarding" checked onchange="update()">
+        <label class="mod-label" for="mod-onboarding">
+          <span class="mod-icon">👋</span> Onboarding
+          <span class="mod-check"></span>
+        </label>
+      </div>
+      <div class="mod-item">
+        <input type="checkbox" id="mod-training" onchange="update()">
+        <label class="mod-label" for="mod-training">
+          <span class="mod-icon">📚</span> Training
+          <span class="mod-check"></span>
+        </label>
+      </div>
+    </div>
   </div>
 
-  <div class="sliders-card">
-    <div class="sliders-title">Your company</div>
+  <!-- Sliders -->
+  <div class="sec">Your company</div>
+  <div class="card" style="margin-bottom:1rem">
     <div class="slider-row">
       <label>Headcount</label>
-      <input type="range" min="10" max="500" value="50" step="5" id="hc-slider">
-      <span class="slider-val" id="hc-val">50 employees</span>
+      <input type="range" min="10" max="500" value="50" step="5" id="hc">
+      <span class="slider-val" id="hc-v">50 employees</span>
     </div>
     <div class="slider-row">
       <label>New hires / year</label>
-      <input type="range" min="1" max="100" value="8" step="1" id="hire-slider">
-      <span class="slider-val" id="hire-val">8 hires/year</span>
+      <input type="range" min="1" max="100" value="8" step="1" id="nh">
+      <span class="slider-val" id="nh-v">8 hires/year</span>
     </div>
     <div class="slider-row">
       <label>HR staff</label>
-      <input type="range" min="1" max="20" value="2" step="1" id="hr-slider">
-      <span class="slider-val" id="hr-val">2 HR staff</span>
+      <input type="range" min="1" max="20" value="2" step="1" id="hrs">
+      <span class="slider-val" id="hrs-v">2 HR staff</span>
     </div>
     <div class="slider-row">
       <label>Avg. HR salary</label>
-      <input type="range" min="3000" max="12000" value="5500" step="500" id="sal-slider">
-      <span class="slider-val" id="sal-val">RM 5,500/mo</span>
+      <input type="range" min="3000" max="12000" value="5500" step="500" id="sal">
+      <span class="slider-val" id="sal-v">RM 5,500/mo</span>
     </div>
   </div>
 
-  <div class="metrics-grid">
-    <div class="metric">
-      <div class="metric-label">Hours saved / year</div>
-      <div class="metric-value" id="m-hours">—</div>
-      <div class="metric-sub">manual → digital</div>
+  <!-- Metrics -->
+  <div class="sec">Time &amp; money saved by going digital</div>
+  <div class="metrics-grid" style="margin-bottom:1rem">
+    <div class="met">
+      <div class="met-label">Hours saved / yr</div>
+      <div class="met-val" id="m-hrs">—</div>
+      <div class="met-sub">manual → digital</div>
     </div>
-    <div class="metric">
-      <div class="metric-label">Days saved / year</div>
-      <div class="metric-value" id="m-days">—</div>
-      <div class="metric-sub">based on 8hr day</div>
+    <div class="met">
+      <div class="met-label">Days saved / yr</div>
+      <div class="met-val" id="m-days">—</div>
+      <div class="met-sub">at 8 hrs/day</div>
     </div>
-    <div class="metric highlight">
-      <div class="metric-label">Est. cost savings / yr</div>
-      <div class="metric-value" id="m-cost">—</div>
-      <div class="metric-sub">in HR labour costs</div>
+    <div class="met green">
+      <div class="met-label">Est. cost savings / yr</div>
+      <div class="met-val" id="m-cost">—</div>
+      <div class="met-sub">in HR labour costs</div>
     </div>
-    <div class="metric">
-      <div class="metric-label">HR capacity freed</div>
-      <div class="metric-value" id="m-pct">—</div>
-      <div class="metric-sub">of your team's time</div>
+    <div class="met">
+      <div class="met-label">HR capacity freed</div>
+      <div class="met-val" id="m-pct">—</div>
+      <div class="met-sub">of your team's time</div>
     </div>
   </div>
 
-  <div class="cat-col-headers">
-    <span></span>
-    <span>Category</span>
+  <!-- Category breakdown -->
+  <div class="col-head">
+    <span></span><span>Module</span>
     <span style="text-align:right">Manual/yr</span>
     <span style="text-align:right">Digital/yr</span>
-    <span style="text-align:right">Hours saved</span>
+    <span style="text-align:right">Hrs saved</span>
+  </div>
+  <div id="cat-list" style="margin-bottom:1.5rem"></div>
+
+  <!-- Penalties -->
+  <div class="sec">Compliance &amp; penalty risk</div>
+  <div class="card">
+    <div class="pen-grid">
+      <div class="pen-card">
+        <div class="pen-who">EPF / KWSP</div>
+        <div class="pen-name">Late payment</div>
+        <div class="pen-line"><strong>6% p.a.</strong> charged daily<br>Min. <strong>RM 10</strong>/occurrence<br>Criminal prosecution possible</div>
+      </div>
+      <div class="pen-card">
+        <div class="pen-who">SOCSO &amp; EIS / PERKESO</div>
+        <div class="pen-name">Late / incorrect payment</div>
+        <div class="pen-line"><strong>6% p.a.</strong> charged daily<br>Min. <strong>RM 5</strong>/month<br>Up to <strong>RM 10,000</strong> or 2 yrs jail</div>
+      </div>
+      <div class="pen-card">
+        <div class="pen-who">PCB / MTD / LHDN</div>
+        <div class="pen-name">Non-remittance</div>
+        <div class="pen-line">Min. <strong>RM 200</strong>, max <strong>RM 20,000</strong><br>Or 6 months imprisonment<br>Unpaid MTD = government debt</div>
+      </div>
+    </div>
+    <div class="pen-exposure">
+      <div class="pen-exp-text">
+        At <strong id="p-hc">50</strong> employees, a single month's error across all 3 statutory bodies exposes you to a combined maximum fine of:
+      </div>
+      <div class="pen-exp-num">
+        <div class="big" id="p-max">—</div>
+        <div class="small">max combined penalty</div>
+      </div>
+    </div>
   </div>
 
-  <div class="categories" id="cat-list"></div>
-
-  <div class="method-card">
-    <div class="method-title">How we calculated this</div>
-    <div class="method-grid">
-      <div class="method-item"><strong>Payroll & statutory</strong> — ~6 min/employee/month for calculation + separate portal submissions to EPF (i-Akaun), SOCSO/EIS (PERKESO), PCB (e-PCB), and HRDCorp. 4 portals × monthly = significant overhead. Annual filing (Form EA, Form E) adds to year-end load.</div>
-      <div class="method-item"><strong>Leave management</strong> — ~5 min/employee/month: receiving applications, manager approval routing, balance tracking, medical cert verification, carry-forward calculations. Scales linearly with headcount.</div>
-      <div class="method-item"><strong>Claims & expenses</strong> — ~12 min/employee/month: paper/email receipt collection, verification, approval chain, data entry, reimbursement processing. Highly manual without a system.</div>
-      <div class="method-item"><strong>Time & attendance</strong> — ~10 min/employee/month: timesheet collection, OT classification (normal day / rest day / public holiday under EA 1955), reconciliation before payroll lock. Errors require rework.</div>
-      <div class="method-item"><strong>Onboarding</strong> — ~3 hrs HR effort per new hire (contract prep, document collection, statutory registration, system setup, orientation). Based on industry benchmarks for SMEs.</div>
-      <div class="method-item"><strong>Digital reduction</strong> — 85–92% reduction per task based on published case studies. Conservative vs. vendors who claim 95%+. Residual digital time accounts for review, exceptions, and approvals that still require human judgment.</div>
+  <!-- Methodology -->
+  <div class="sec">How these numbers are calculated</div>
+  <div class="card">
+    <div class="method-steps">
+      <div class="mstep">
+        <div class="mnum">1</div>
+        <div class="mtext"><strong>Hours saved</strong> — for each selected module, manual hrs/year minus digital hrs/year, summed across all active tasks.<br><span class="formula">Hours saved = Σ (manual − digital) across selected modules</span></div>
+      </div>
+      <div class="mstep">
+        <div class="mnum">2</div>
+        <div class="mtext"><strong>FTE equivalent</strong> — hours saved ÷ 1,800 (Malaysian working hours/year: 45 hrs/week × 40 working weeks, net of leave &amp; public holidays).<br><span class="formula">FTE = hours saved ÷ 1,800</span></div>
+      </div>
+      <div class="mstep">
+        <div class="mnum">3</div>
+        <div class="mtext"><strong>Est. cost savings</strong> — FTE × avg HR salary × 12. This is the cost of time reclaimed from admin — not headcount reduction. Your team redirects that time to hiring, retention, and culture.<br><span class="formula">Cost savings = FTE × salary × 12</span></div>
+      </div>
     </div>
+    <hr class="method-divider">
+    <div class="sec" style="margin-bottom:8px">Time estimates per module</div>
+    <div class="basis-grid">
+      <div class="bi"><strong>Payroll &amp; statutory</strong> — ~6 min/employee/month + fixed portal overhead across 4 gov portals (i-Akaun, PERKESO, e-PCB, HRDCorp). Sublinear — fixed cost spread across more employees as headcount grows.</div>
+      <div class="bi"><strong>Leave</strong> — ~5 min/employee/month: applications, manager routing, balance updates, MC verification. Linear.</div>
+      <div class="bi"><strong>Claims</strong> — ~12 min/employee/month: receipt collection, policy check, approval chain, reimbursement. Linear.</div>
+      <div class="bi"><strong>Attendance</strong> — ~10 min/employee/month: timesheet collection, OT classification under EA 1955, reconciliation. Slightly superlinear above 100 ppl.</div>
+      <div class="bi"><strong>Performance</strong> — ~1.5 hrs/employee/cycle × 2 cycles/year: form prep, review sessions, calibration, documentation.</div>
+      <div class="bi"><strong>Recruitment</strong> — ~4 hrs/hire: job posting, CV screening, interview coordination, offer letter, rejection comms.</div>
+      <div class="bi"><strong>Onboarding</strong> — ~3 hrs/new hire: contract prep, statutory registration, payroll setup, orientation. Driven by hires/year.</div>
+      <div class="bi"><strong>Training</strong> — ~2 hrs/employee/year: training needs analysis, scheduling, attendance tracking, HRD Corp claim submission.</div>
+    </div>
+    <p class="nonlinear-note"><strong>Non-linear scaling:</strong> Payroll is sublinear (fixed portal overhead). Attendance is mildly superlinear above 100 ppl (error compounding). Leave and claims are linear. Penalties are capped at statutory maximums.</p>
   </div>
 
   <div class="footer">
     <span class="footer-brand">BrioHR</span>
-    <span class="footer-note">Estimates are indicative. Actual savings depend on current process maturity.</span>
+    <span class="footer-note">Estimates are indicative. Penalty figures are statutory maximums per KWSP, PERKESO &amp; LHDN.</span>
   </div>
-
 </div>
 
 <script>
-// Category definitions
-// manualFn(hc, hires) → manual hours/year
-// digitalFn(hc, hires) → digital hours/year
-// tasks: array of { name, basis, manualFn, digitalFn }
+function payrollScale(hc) {
+  const fixed = 8;
+  const variable = hc * 6/60 * 12;
+  return fixed + variable * Math.pow(hc/50, -0.12);
+}
+function taScale(hc) {
+  const base = hc * 10/60 * 12;
+  return hc <= 100 ? base : base * Math.pow(hc/100, 0.12);
+}
 
-const CATEGORIES = [
+const CATS = [
   {
-    icon: '📋',
-    name: 'Payroll & Statutory',
-    sub: 'EPF, SOCSO, EIS, PCB, HRD Corp, Form EA/E',
-    tasks: [
-      {
-        name: 'Payroll calculation & payslips',
-        basis: '~6 min/employee/month (verify data, calculate gross-to-net, deductions, issue payslips)',
-        manualFn: (hc) => Math.round(hc * 6/60 * 12),
-        digitalFn: (hc) => Math.round(hc * 0.5/60 * 12),
-      },
-      {
-        name: 'EPF, SOCSO/EIS & PCB submissions',
-        basis: '~3 portal submissions/month × 15 min each + rate verification (4 gov portals)',
-        manualFn: (hc) => Math.round(45/60 * 12 + hc * 1/60 * 12),
-        digitalFn: (hc) => Math.round(hc * 0.1/60 * 12),
-      },
-      {
-        name: 'HRD Corp levy & Form EA / Form E',
-        basis: '~30 min/month for HRDF + ~5 min/employee for annual EA form',
-        manualFn: (hc) => Math.round(0.5 * 12 + hc * 5/60),
-        digitalFn: (hc) => Math.round(0.08 * 12 + hc * 0.5/60),
-      },
+    id: 'payroll', icon:'📋', name:'Payroll & Statutory', sub:'EPF, SOCSO, EIS, PCB, HRD Corp, Form EA/E',
+    tasks:[
+      { name:'Payroll calculation & payslips',          basis:'~6 min/employee/month — gross-to-net, OT, deductions, payslips',
+        mFn:(hc)=>Math.round(payrollScale(hc)),                    dFn:(hc)=>Math.round(hc*0.5/60*12+2) },
+      { name:'EPF, SOCSO/EIS & PCB portal submissions', basis:'~3 portals × 15 min/month + per-employee rate checks',
+        mFn:(hc)=>Math.round(45/60*12+hc*1/60*12),                dFn:(hc)=>Math.round(hc*0.1/60*12+1) },
+      { name:'HRD Corp levy & Form EA / Form E',        basis:'~30 min/month HRDF + ~5 min/employee annually',
+        mFn:(hc)=>Math.round(0.5*12+hc*5/60),                     dFn:(hc)=>Math.round(0.08*12+hc*0.5/60) },
     ]
   },
   {
-    icon: '🏖',
-    name: 'Leave Management',
-    sub: 'Annual, medical, emergency, carry-forward',
-    tasks: [
-      {
-        name: 'Leave applications & approvals',
-        basis: '~3 min/employee/month: receive, route to manager, record outcome',
-        manualFn: (hc) => Math.round(hc * 3/60 * 12),
-        digitalFn: (hc) => Math.round(hc * 0.3/60 * 12),
-      },
-      {
-        name: 'Balance tracking & MC verification',
-        basis: '~2 min/employee/month: update balances, check medical certs, carry-forward at year-end',
-        manualFn: (hc) => Math.round(hc * 2/60 * 12),
-        digitalFn: (hc) => Math.round(hc * 0.2/60 * 12),
-      },
+    id: 'leave', icon:'🏖', name:'Leave Management', sub:'Annual, medical, emergency, carry-forward',
+    tasks:[
+      { name:'Leave applications & approvals',     basis:'~3 min/employee/month — receive, route, record, update balance',
+        mFn:(hc)=>Math.round(hc*3/60*12),  dFn:(hc)=>Math.round(hc*0.3/60*12) },
+      { name:'Balance tracking & MC verification', basis:'~2 min/employee/month — ledger updates, cert checks, carry-forward',
+        mFn:(hc)=>Math.round(hc*2/60*12),  dFn:(hc)=>Math.round(hc*0.2/60*12) },
     ]
   },
   {
-    icon: '🧾',
-    name: 'Claims & Expenses',
-    sub: 'Receipt collection, approval, reimbursement',
-    tasks: [
-      {
-        name: 'Claim submission & verification',
-        basis: '~7 min/employee/month: collect receipts (paper/email), verify against policy',
-        manualFn: (hc) => Math.round(hc * 7/60 * 12),
-        digitalFn: (hc) => Math.round(hc * 0.6/60 * 12),
-      },
-      {
-        name: 'Approval routing & reimbursement',
-        basis: '~5 min/employee/month: route for approval, data entry, process payment',
-        manualFn: (hc) => Math.round(hc * 5/60 * 12),
-        digitalFn: (hc) => Math.round(hc * 0.4/60 * 12),
-      },
+    id: 'claims', icon:'🧾', name:'Claims & Expenses', sub:'Receipt collection, approval, reimbursement',
+    tasks:[
+      { name:'Claim submission & verification',   basis:'~7 min/employee/month — collect receipts, verify against policy',
+        mFn:(hc)=>Math.round(hc*7/60*12),  dFn:(hc)=>Math.round(hc*0.6/60*12) },
+      { name:'Approval routing & reimbursement',  basis:'~5 min/employee/month — approval chain, data entry, payment',
+        mFn:(hc)=>Math.round(hc*5/60*12),  dFn:(hc)=>Math.round(hc*0.4/60*12) },
     ]
   },
   {
-    icon: '🕐',
-    name: 'Time & Attendance',
-    sub: 'Timesheets, overtime, shift management',
-    tasks: [
-      {
-        name: 'Timesheet collection & verification',
-        basis: '~5 min/employee/month: collect, chase missing, reconcile against roster',
-        manualFn: (hc) => Math.round(hc * 5/60 * 12),
-        digitalFn: (hc) => Math.round(hc * 0.4/60 * 12),
-      },
-      {
-        name: 'OT calculation & approval',
-        basis: '~5 min/employee/month: classify OT type (weekday/rest day/PH), calculate rate, get approval before payroll',
-        manualFn: (hc) => Math.round(hc * 5/60 * 12),
-        digitalFn: (hc) => Math.round(hc * 0.5/60 * 12),
-      },
+    id: 'attendance', icon:'🕐', name:'Time & Attendance', sub:'Timesheets, overtime, shift management',
+    tasks:[
+      { name:'Timesheet collection & verification', basis:'~5 min/employee/month — collect, chase gaps, reconcile vs roster',
+        mFn:(hc)=>Math.round(taScale(hc)*0.5),  dFn:(hc)=>Math.round(hc*0.4/60*12) },
+      { name:'OT classification & approval',        basis:'~5 min/employee/month — classify weekday/rest day/PH under EA 1955',
+        mFn:(hc)=>Math.round(taScale(hc)*0.5),  dFn:(hc)=>Math.round(hc*0.5/60*12) },
     ]
   },
   {
-    icon: '👋',
-    name: 'Onboarding',
-    sub: 'Per new hire: contracts, registration, orientation',
-    tasks: [
-      {
-        name: 'Contract prep & document collection',
-        basis: '~1.5 hrs/hire: offer letter, contract, IC, cert collection, signing',
-        manualFn: (_, hires) => Math.round(hires * 1.5),
-        digitalFn: (_, hires) => Math.round(hires * 0.25),
-      },
-      {
-        name: 'Statutory registration & system setup',
-        basis: '~1 hr/hire: EPF/SOCSO registration, payroll setup, access provisioning',
-        manualFn: (_, hires) => Math.round(hires * 1.0),
-        digitalFn: (_, hires) => Math.round(hires * 0.15),
-      },
-      {
-        name: 'Orientation & HR induction',
-        basis: '~0.5 hrs/hire: handbook briefing, policy walkthrough, forms completion',
-        manualFn: (_, hires) => Math.round(hires * 0.5),
-        digitalFn: (_, hires) => Math.round(hires * 0.1),
-      },
+    id: 'performance', icon:'🎯', name:'Performance Management', sub:'Reviews, appraisals, goal tracking',
+    tasks:[
+      { name:'Review cycle preparation & forms',   basis:'~1.5 hrs/employee × 2 cycles/year — form setup, distribution, reminders',
+        mFn:(hc)=>Math.round(hc*1.5*2),  dFn:(hc)=>Math.round(hc*0.25*2) },
+      { name:'Calibration & documentation',        basis:'~0.5 hrs/employee × 2 cycles — collate scores, calibration meetings, filing',
+        mFn:(hc)=>Math.round(hc*0.5*2),  dFn:(hc)=>Math.round(hc*0.1*2) },
+    ]
+  },
+  {
+    id: 'recruitment', icon:'🔍', name:'Recruitment', sub:'Job posting, screening, coordination',
+    tasks:[
+      { name:'Job posting & CV screening',         basis:'~2 hrs/hire — write JD, post across boards, screen applications',
+        mFn:(_,nh)=>Math.round(nh*2),   dFn:(_,nh)=>Math.round(nh*0.5) },
+      { name:'Interview coordination & offer',     basis:'~2 hrs/hire — schedule interviews, communicate, prepare offer letter',
+        mFn:(_,nh)=>Math.round(nh*2),   dFn:(_,nh)=>Math.round(nh*0.4) },
+    ]
+  },
+  {
+    id: 'onboarding', icon:'👋', name:'Onboarding', sub:'Per new hire: contracts, registration, orientation',
+    tasks:[
+      { name:'Contract prep & document collection', basis:'~1.5 hrs/hire — offer letter, contract, IC, cert collection, signing',
+        mFn:(_,nh)=>Math.round(nh*1.5),  dFn:(_,nh)=>Math.round(nh*0.25) },
+      { name:'Statutory registration & payroll setup', basis:'~1 hr/hire — EPF/SOCSO/EIS registration, payroll profile, access',
+        mFn:(_,nh)=>Math.round(nh*1.0),  dFn:(_,nh)=>Math.round(nh*0.15) },
+      { name:'Orientation & HR induction',          basis:'~0.5 hrs/hire — handbook briefing, policy walkthrough, forms',
+        mFn:(_,nh)=>Math.round(nh*0.5),  dFn:(_,nh)=>Math.round(nh*0.1) },
+    ]
+  },
+  {
+    id: 'training', icon:'📚', name:'Training & Development', sub:'Scheduling, tracking, HRD Corp claims',
+    tasks:[
+      { name:'Training needs analysis & scheduling', basis:'~1 hr/employee/year — identify gaps, schedule sessions, coordinate trainers',
+        mFn:(hc)=>Math.round(hc*1),    dFn:(hc)=>Math.round(hc*0.15) },
+      { name:'Attendance tracking & HRD Corp claim', basis:'~1 hr/employee/year — track attendance, prepare HRDCorp claim submissions',
+        mFn:(hc)=>Math.round(hc*1),    dFn:(hc)=>Math.round(hc*0.1) },
     ]
   },
 ];
 
-const WORK_HOURS_YEAR = 1800;
-function fmt(n) { return n.toLocaleString('en-MY'); }
-function fmtRM(n) { return 'RM ' + Math.round(n).toLocaleString('en-MY'); }
+const WORK_HRS = 1800;
+const fmt  = n => Math.round(n).toLocaleString('en-MY');
+const fmRM = n => 'RM ' + Math.round(n).toLocaleString('en-MY');
 
 // Build DOM
 const catList = document.getElementById('cat-list');
-CATEGORIES.forEach((cat, ci) => {
-  const card = document.createElement('div');
-  card.className = 'cat-card';
-  card.innerHTML = `
-    <div class="cat-header" onclick="toggleCat(${ci})">
+CATS.forEach((cat, ci) => {
+  const el = document.createElement('div');
+  el.className = 'cat-card';
+  el.id = 'cat-' + cat.id;
+  el.innerHTML = `
+    <div class="cat-head" onclick="this.closest('.cat-card').classList.toggle('open')">
       <span class="cat-icon">${cat.icon}</span>
       <div>
-        <div class="cat-name">${cat.name} <span>${cat.sub}</span></div>
-        <div class="cat-bar-wrap"><div class="cat-bar-fill" id="bar-${ci}" style="width:0%"></div></div>
+        <div class="cat-label">${cat.name} <span class="cat-sub">${cat.sub}</span></div>
+        <div class="bar-wrap"><div class="bar-fill" id="bar${ci}" style="width:0%"></div></div>
       </div>
-      <div class="cat-manual" id="cm-${ci}">—</div>
-      <div class="cat-digital" id="cd-${ci}">—</div>
-      <div class="cat-saved" id="cs-${ci}">—</div>
+      <div class="col-m" id="cm${ci}">—</div>
+      <div class="col-d" id="cd${ci}">—</div>
+      <div class="col-s" id="cs${ci}">—</div>
     </div>
-    <div class="cat-body" id="body-${ci}">
-      <div class="task-header">
+    <div class="cat-body">
+      <div class="task-col-head">
         <span>Task</span>
         <span style="text-align:right">Manual/yr</span>
         <span style="text-align:right">Digital/yr</span>
         <span style="text-align:right">Saved</span>
       </div>
-      ${cat.tasks.map((t, ti) => `
-        <div class="task-row" id="task-${ci}-${ti}">
-          <div>
-            <div class="task-name-cell">${t.name}</div>
-            <div class="task-basis">${t.basis}</div>
-          </div>
-          <div class="task-m" id="tm-${ci}-${ti}">—</div>
-          <div class="task-d" id="td-${ci}-${ti}">—</div>
-          <div class="task-s" id="ts-${ci}-${ti}">—</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-  catList.appendChild(card);
+      ${cat.tasks.map((t,ti)=>`
+        <div class="task-row">
+          <div><div class="t-name">${t.name}</div><div class="t-basis">${t.basis}</div></div>
+          <div class="t-m" id="tm${ci}${ti}">—</div>
+          <div class="t-d" id="td${ci}${ti}">—</div>
+          <div class="t-s" id="ts${ci}${ti}">—</div>
+        </div>`).join('')}
+    </div>`;
+  catList.appendChild(el);
 });
-
-function toggleCat(ci) {
-  const card = catList.children[ci];
-  card.classList.toggle('open');
-}
 
 function update() {
-  const hc     = parseInt(document.getElementById('hc-slider').value);
-  const hires  = parseInt(document.getElementById('hire-slider').value);
-  const hrStaff= parseInt(document.getElementById('hr-slider').value);
-  const salary = parseInt(document.getElementById('sal-slider').value);
+  const hc  = +document.getElementById('hc').value;
+  const nh  = +document.getElementById('nh').value;
+  const hst = +document.getElementById('hrs').value;
+  const sal = +document.getElementById('sal').value;
 
-  document.getElementById('hc-val').textContent   = hc + ' employees';
-  document.getElementById('hire-val').textContent = hires + ' hires/year';
-  document.getElementById('hr-val').textContent   = hrStaff + ' HR staff';
-  document.getElementById('sal-val').textContent  = 'RM ' + salary.toLocaleString('en-MY') + '/mo';
+  document.getElementById('hc-v').textContent  = hc + ' employees';
+  document.getElementById('nh-v').textContent  = nh + ' hires/year';
+  document.getElementById('hrs-v').textContent = hst + ' HR staff';
+  document.getElementById('sal-v').textContent = 'RM ' + sal.toLocaleString('en-MY') + '/mo';
 
-  let grandManual = 0, grandDigital = 0;
+  let gM = 0, gD = 0;
   const catSaved = [];
 
-  CATEGORIES.forEach((cat, ci) => {
-    let catManual = 0, catDigital = 0;
+  CATS.forEach((cat, ci) => {
+    const enabled = document.getElementById('mod-' + cat.id).checked;
+    const card = document.getElementById('cat-' + cat.id);
+    card.classList.toggle('disabled', !enabled);
+
+    let cM = 0, cD = 0;
     cat.tasks.forEach((t, ti) => {
-      const m = t.manualFn(hc, hires);
-      const d = t.digitalFn(hc, hires);
-      const s = m - d;
-      catManual  += m;
-      catDigital += d;
-      document.getElementById(`tm-${ci}-${ti}`).textContent = fmt(m) + ' hrs';
-      document.getElementById(`td-${ci}-${ti}`).textContent = fmt(d) + ' hrs';
-      document.getElementById(`ts-${ci}-${ti}`).textContent = fmt(s) + ' hrs';
+      const m = enabled ? t.mFn(hc, nh) : 0;
+      const d = enabled ? t.dFn(hc, nh) : 0;
+      cM += m; cD += d;
+      document.getElementById(`tm${ci}${ti}`).textContent = enabled ? fmt(m)+' hrs' : '—';
+      document.getElementById(`td${ci}${ti}`).textContent = enabled ? fmt(d)+' hrs' : '—';
+      document.getElementById(`ts${ci}${ti}`).textContent = enabled ? fmt(m-d)+' hrs' : '—';
     });
-    const saved = catManual - catDigital;
-    catSaved.push(saved);
-    grandManual  += catManual;
-    grandDigital += catDigital;
-    document.getElementById(`cm-${ci}`).textContent = fmt(catManual) + ' hrs';
-    document.getElementById(`cd-${ci}`).textContent = fmt(catDigital) + ' hrs';
-    document.getElementById(`cs-${ci}`).textContent = fmt(saved) + ' hrs';
+
+    const saved = cM - cD;
+    catSaved.push(enabled ? saved : 0);
+    if (enabled) { gM += cM; gD += cD; }
+
+    document.getElementById(`cm${ci}`).textContent = enabled ? fmt(cM)+' hrs' : '—';
+    document.getElementById(`cd${ci}`).textContent = enabled ? fmt(cD)+' hrs' : '—';
+    document.getElementById(`cs${ci}`).textContent = enabled ? fmt(saved)+' hrs' : '—';
   });
 
-  const maxCatSaved = Math.max(...catSaved);
+  const maxS = Math.max(...catSaved, 1);
   catSaved.forEach((s, ci) => {
-    const pct = maxCatSaved > 0 ? Math.round(s / maxCatSaved * 100) : 0;
-    document.getElementById(`bar-${ci}`).style.width = pct + '%';
+    document.getElementById(`bar${ci}`).style.width = Math.round(s/maxS*100)+'%';
   });
 
-  const totalSaved = grandManual - grandDigital;
-  const days       = Math.round(totalSaved / 8);
-  const hrCap      = hrStaff * WORK_HOURS_YEAR;
-  const pct        = Math.min(Math.round(totalSaved / hrCap * 100), 95);
-  const fte        = totalSaved / WORK_HOURS_YEAR;
-  const cost       = Math.round(fte * salary * 12);
+  const saved = gM - gD;
+  const fte   = saved / WORK_HRS;
+  const days  = Math.round(saved / 8);
+  const pct   = Math.min(Math.round(saved / (hst * WORK_HRS) * 100), 95);
+  const cost  = Math.round(fte * sal * 12);
 
-  document.getElementById('m-hours').textContent = fmt(totalSaved) + ' hrs';
-  document.getElementById('m-days').textContent  = fmt(days) + ' days';
-  document.getElementById('m-cost').textContent  = fmtRM(cost);
-  document.getElementById('m-pct').textContent   = pct + '%';
+  document.getElementById('m-hrs').textContent  = fmt(saved)+' hrs';
+  document.getElementById('m-days').textContent = fmt(days)+' days';
+  document.getElementById('m-cost').textContent = fmRM(cost);
+  document.getElementById('m-pct').textContent  = pct+'%';
+
+  const penBase   = 30030;
+  const penScaled = Math.round(penBase * (1 + Math.min(hc/500, 1) * 0.3));
+  document.getElementById('p-hc').textContent  = hc;
+  document.getElementById('p-max').textContent = fmRM(penScaled);
 }
 
-['hc-slider','hire-slider','hr-slider','sal-slider'].forEach(id => {
-  document.getElementById(id).addEventListener('input', update);
-});
+['hc','nh','hrs','sal'].forEach(id => document.getElementById(id).addEventListener('input', update));
 update();
 </script>
 </body>
